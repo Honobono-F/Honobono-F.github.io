@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Honobono</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --sakura-deep: #c4607a;
+  --sakura-mid: #e8a0b4;
+  --sakura-pale: #f7dde6;
+  --sakura-mist: #fdf0f4;
+  --gold: #c9a96e;
+  --gold-light: #e8d5b0;
+  --ink: #2a1f2d;
+  --ink-light: #6b4f6e;
+  --white: #fffbfc;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--white);
+  font-family: 'Noto Serif JP', serif;
+  cursor: none;
+}
+
+/* Custom cursor */
+.cursor {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: var(--sakura-deep);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease;
+  mix-blend-mode: multiply;
+}
+.cursor-ring {
+  position: fixed;
+  width: 32px; height: 32px;
+  border: 1px solid var(--sakura-mid);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+  transform: translate(-50%, -50%);
+  transition: all 0.15s ease;
+  mix-blend-mode: multiply;
+}
+
+/* Canvas for petals */
+#sakura-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Background */
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(247,221,230,0.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(232,160,180,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(253,240,244,1) 0%, var(--white) 70%);
+}
+
+/* Subtle grid texture */
+.bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(196,96,122,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196,96,122,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Main container */
+.container {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+}
+
+/* Top decorative line */
+.deco-top {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  opacity: 0;
+  animation: fadeIn 1.5s ease 0.5s forwards;
+}
+
+.deco-line {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sakura-mid));
+}
+.deco-line.right {
+  background: linear-gradient(90deg, var(--sakura-mid), transparent);
+}
+.deco-diamond {
+  width: 6px; height: 6px;
+  background: var(--sakura-deep);
+  transform: rotate(45deg);
+}
+.deco-text {
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: var(--sakura-deep);
+  font-weight: 300;
+}
+
+/* Season badge */
+.season-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 20px;
+  border: 1px solid var(--sakura-mid);
+  border-radius: 20px;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--sakura-deep);
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.8s forwards;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+}
+.season-dot {
+  width: 5px; height: 5px;
+  background: var(--sakura-deep);
+  border-radius: 50%;
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}
+
+/* 3D Title */
+.title-wrap {
+  position: relative;
+  text-align: center;
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: titleReveal 1.8s cubic-bezier(0.16,1,0.3,1) 1s forwards;
+}
+
+@keyframes titleReveal {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.title-main {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(5rem, 16vw, 11rem);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: transparent;
+  background: linear-gradient(
+    135deg,
+    #c4607a 0%,
+    #e8a0b4 25%,
+    #c9a96e 45%,
+    #e8a0b4 65%,
+    #c4607a 85%,
+    #e8d5b0 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 6s ease infinite;
+  text-shadow: none;
+  position: relative;
+  display: inline-block;
+  /* 3D effect */
+  filter: drop-shadow(0 1px 0 rgba(196,96,122,0.4))
+          drop-shadow(0 2px 0 rgba(196,96,122,0.3))
+          drop-shadow(0 3px 0 rgba(196,96,122,0.2))
+          drop-shadow(0 4px 0 rgba(196,96,122,0.1))
+          drop-shadow(0 8px 20px rgba(196,96,122,0.2))
+          drop-shadow(0 20px 40px rgba(196,96,122,0.1));
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Japanese subtitle under main title */
+.title-jp {
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+  letter-spacing: 0.6em;
+  color: var(--ink-light);
+  font-weight: 200;
+  margin-top: 4px;
+  opacity: 0;
+  animation: fadeIn 1s ease 2s forwards;
+}
+
+/* Gold decorative divider */
+.gold-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 40px 0;
+  opacity: 0;
+  animation: fadeIn 1s ease 1.8s forwards;
+}
+.gold-line {
+  width: 120px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold));
+}
+.gold-line.right {
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+.gold-ornament {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.gold-diamond {
+  width: 5px; height: 5px;
+  background: var(--gold);
+  transform: rotate(45deg);
+}
+.gold-diamond.small {
+  width: 3px; height: 3px;
+  background: var(--gold-light);
+}
+
+/* Catchcopy */
+.catchcopy {
+  text-align: center;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeUp 1s ease 2.2s forwards;
+}
+.catchcopy p {
+  font-size: clamp(0.75rem, 1.8vw, 0.9rem);
+  color: var(--ink-light);
+  letter-spacing: 0.2em;
+  font-weight: 300;
+  line-height: 2;
+}
+.catchcopy .en {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  color: var(--sakura-deep);
+  letter-spacing: 0.1em;
+  display: block;
+  margin-top: 8px;
+}
+
+/* Navigation */
+nav {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 56px;
+  opacity: 0;
+  animation: fadeUp 1s ease 2.5s forwards;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.nav-item {
+  position: relative;
+  padding: 10px 28px;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--ink-light);
+  text-decoration: none;
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 300;
+  transition: color 0.3s ease;
+  overflow: hidden;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(196,96,122,0);
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: all 0.4s ease;
+}
+
+.nav-item:hover { color: var(--sakura-deep); }
+.nav-item:hover::before {
+  background: rgba(247,221,230,0.5);
+  border-color: var(--sakura-mid);
+}
+
+.nav-sep {
+  display: flex;
+  align-items: center;
+  color: var(--sakura-mid);
+  font-size: 10px;
+  padding: 0 2px;
+}
+
+/* SNS links */
+.sns-wrap {
+  display: flex;
+  gap: 20px;
+  opacity: 0;
+  animation: fadeUp 1s ease 2.8s forwards;
+}
+
+.sns-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  border: 1px solid var(--sakura-mid);
+  border-radius: 50%;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+}
+
+.sns-link:hover {
+  background: var(--sakura-pale);
+  border-color: var(--sakura-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(196,96,122,0.2);
+}
+
+.sns-link svg {
+  width: 16px; height: 16px;
+  fill: var(--sakura-deep);
+}
+
+/* Bottom decoration */
+.deco-bottom {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeIn 1.5s ease 3s forwards;
+}
+.scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--sakura-mid), transparent);
+  animation: scrollAnim 2s ease infinite;
+}
+@keyframes scrollAnim {
+  0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+  50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  51% { transform: scaleY(1); transform-origin: bottom; opacity: 1; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+}
+.scroll-text {
+  font-size: 8px;
+  letter-spacing: 0.4em;
+  color: var(--sakura-mid);
+}
+
+/* Vertical Japanese text decorations */
+.v-text {
+  position: fixed;
+  writing-mode: vertical-rl;
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: rgba(196,96,122,0.2);
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 200;
+  z-index: 5;
+}
+.v-text.left { left: 24px; top: 50%; transform: translateY(-50%); }
+.v-text.right { right: 24px; top: 50%; transform: translateY(-50%); }
+
+/* Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .v-text { display: none; }
+  .deco-top { display: none; }
+  nav { gap: 2px; }
+  .nav-item { padding: 8px 16px; font-size: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="bg"></div>
+<canvas id="sakura-canvas"></canvas>
+
+<!-- Vertical decorative text -->
+<div class="v-text left">春　・　花　・　美　・　風</div>
+<div class="v-text right">二〇二六　年　春</div>
+
+<div class="container">
+
+  <!-- Top deco -->
+  <div class="deco-top">
+    <div class="deco-line"></div>
+    <div class="deco-diamond"></div>
+    <span class="deco-text">SPRING 2026</span>
+    <div class="deco-diamond"></div>
+    <div class="deco-line right"></div>
+  </div>
+
+  <!-- Season badge -->
+  <div class="season-badge">
+    <span class="season-dot"></span>
+    桜の季節
+    <span class="season-dot"></span>
+  </div>
+
+  <!-- 3D Title -->
+  <div class="title-wrap">
+    <h1 class="title-main">Honobono</h1>
+    <p class="title-jp">ほのぼの　―　心あたたまる場所</p>
+  </div>
+
+  <!-- Gold divider -->
+  <div class="gold-divider">
+    <div class="gold-line"></div>
+    <div class="gold-ornament">
+      <div class="gold-diamond small"></div>
+      <div class="gold-diamond"></div>
+      <div class="gold-diamond small"></div>
+    </div>
+    <div class="gold-line right"></div>
+  </div>
+
+  <!-- Catchcopy -->
+  <div class="catchcopy">
+    <p>やさしい光と、静かな時間が流れる場所へ。</p>
+    <span class="en">Where gentle warmth meets quiet beauty.</span>
+  </div>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="#" class="nav-item">About</a>
+    <span class="nav-sep">・</span>
+    <a href="#" class="nav-item">Works</a>
+    <span class="nav-sep">・</span>
+    <a href="hana.html" class="nav-item">図解</a>
+    <span class="nav-sep">・</span>
+    <a href="#" class="nav-item">Blog</a>
+    <span class="nav-sep">・</span>
+    <a href="#" class="nav-item">Contact</a>
+  </nav>
+
+  <!-- SNS -->
+  <div class="sns-wrap">
+    <!-- X (Twitter) -->
+    <a href="#" class="sns-link" aria-label="X">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+      </svg>
+    </a>
+    <!-- Instagram -->
+    <a href="#" class="sns-link" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+      </svg>
+    </a>
+    <!-- note -->
+    <a href="#" class="sns-link" aria-label="note">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 2C4.686 2 2 4.686 2 8v8c0 3.314 2.686 6 6 6h8c3.314 0 6-2.686 6-6V8c0-3.314-2.686-6-6-6H8zm0 2h8c2.21 0 4 1.79 4 4v8c0 2.21-1.79 4-4 4H8c-2.21 0-4-1.79-4-4V8c0-2.21 1.79-4 4-4zm-1 4v2h10V8H7zm0 4v2h7v-2H7z"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Bottom deco -->
+  <div class="deco-bottom">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">SCROLL</span>
+  </div>
+
+</div>
+
+<script>
+// Custom cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
+
+function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) *.12;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+// Cherry blossom petals
+const canvas = document.getElementById('sakura-canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Petal {
+  constructor() { this.reset(true); }
+
+  reset(init) {
+    this.x = Math.random() * canvas.width;
+    this.y = init ? Math.random() * canvas.height : -20;
+    this.size = Math.random() * 7 + 4;
+    this.speedY = Math.random() * 0.4 + 0.15;
+    this.speedX = Math.random() * 0.3 - 0.15;
+    this.angle = Math.random() * Math.PI * 2;
+    this.angleSpeed = (Math.random() - 0.5) * 0.008;
+    this.swing = Math.random() * 2 + 0.5;
+    this.swingSpeed = Math.random() * 0.012 + 0.003;
+    this.swingOffset = Math.random() * Math.PI * 2;
+    this.opacity = Math.random() * 0.45 + 0.2;
+    this.opacitySpeed = (Math.random() - 0.5) * 0.002;
+    // petal colors: various sakura shades
+    const colors = [
+      [255,182,193],[255,160,180],[240,128,152],
+      [255,210,220],[252,196,208],[248,174,192]
+    ];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  update() {
+    this.swingOffset += this.swingSpeed;
+    this.x += this.speedX + Math.sin(this.swingOffset) * this.swing * 0.05;
+    this.y += this.speedY;
+    this.angle += this.angleSpeed;
+    this.opacity += this.opacitySpeed;
+    if (this.opacity > 0.8) this.opacitySpeed *= -1;
+    if (this.opacity < 0.1) this.opacitySpeed *= -1;
+    if (this.y > canvas.height + 20) this.reset(false);
+    if (this.x < -20 || this.x > canvas.width + 20) this.reset(false);
+  }
+
+  draw() {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle);
+    ctx.globalAlpha = this.opacity;
+
+    const [r,g,b] = this.color;
+    const s = this.size;
+
+    // Draw a simple petal shape
+    ctx.beginPath();
+    ctx.moveTo(0, -s);
+    ctx.bezierCurveTo(s * 0.8, -s * 0.8, s * 0.8, s * 0.3, 0, s * 0.5);
+    ctx.bezierCurveTo(-s * 0.8, s * 0.3, -s * 0.8, -s * 0.8, 0, -s);
+    ctx.closePath();
+
+    const grad = ctx.createRadialGradient(0, -s*0.2, 0, 0, 0, s);
+    grad.addColorStop(0, `rgba(255,240,245,${this.opacity})`);
+    grad.addColorStop(0.5, `rgba(${r},${g},${b},${this.opacity})`);
+    grad.addColorStop(1, `rgba(${Math.max(r-30,0)},${Math.max(g-30,0)},${Math.max(b-20,0)},${this.opacity * 0.8})`);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Petal vein
+    ctx.beginPath();
+    ctx.moveTo(0, -s);
+    ctx.lineTo(0, s * 0.4);
+    ctx.strokeStyle = `rgba(${Math.max(r-40,0)},${Math.max(g-40,0)},${Math.max(b-30,0)},${this.opacity * 0.3})`;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+}
+
+// Create petals - more for richer effect
+const petals = Array.from({length: 22}, () => new Petal());
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  petals.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animate);
+}
+animate();
+
+// Hover effect on title
+const title = document.querySelector('.title-main');
+title.addEventListener('mousemove', e => {
+  const rect = title.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / rect.width - 0.5;
+  const y = (e.clientY - rect.top) / rect.height - 0.5;
+  title.style.transform = `perspective(600px) rotateY(${x * 8}deg) rotateX(${-y * 4}deg) scale(1.02)`;
+  title.style.transition = 'transform 0.1s ease';
+});
+title.addEventListener('mouseleave', () => {
+  title.style.transform = 'perspective(600px) rotateY(0) rotateX(0) scale(1)';
+  title.style.transition = 'transform 0.5s ease';
+});
+</script>
+</body>
+</html>
