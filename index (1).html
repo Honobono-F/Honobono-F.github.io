@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Honobono</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --sakura-deep: #c4607a;
+  --sakura-mid:  #e8a0b4;
+  --gold:        #c9a96e;
+  --gold-light:  #e8d5b0;
+  --brown:       #6a3a18;
+  --brown-dark:  #3e1f08;
+}
+
+html, body { width:100%; height:100%; overflow:hidden; }
+body { font-family:'Noto Serif JP', serif; cursor:none; }
+
+/* ── カスタムカーソル ── */
+.cursor {
+  position:fixed; width:8px; height:8px;
+  background:var(--sakura-deep); border-radius:50%;
+  pointer-events:none; z-index:200;
+  transform:translate(-50%,-50%);
+}
+.cursor-ring {
+  position:fixed; width:34px; height:34px;
+  border:1px solid rgba(232,160,180,0.6); border-radius:50%;
+  pointer-events:none; z-index:200;
+  transform:translate(-50%,-50%);
+  transition:all .15s ease;
+}
+
+/* ── 背景画像 ── */
+.bg-image {
+  position:fixed; inset:0; z-index:0;
+  background-image:url('images/GitHub-sakura/sakura-main.png');
+  background-size:cover; background-position:center;
+}
+
+/* ── オーバーレイ：写真を活かす最小限 ── */
+.bg-overlay {
+  position:fixed; inset:0; z-index:1;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(10,4,8,0.22) 0%,
+      rgba(10,4,8,0.04) 25%,
+      rgba(10,4,8,0.02) 52%,
+      rgba(10,4,8,0.18) 80%,
+      rgba(10,4,8,0.35) 100%
+    );
+}
+
+/* ── 花びら canvas ── */
+#sakura-canvas {
+  position:fixed; inset:0; width:100%; height:100%;
+  pointer-events:none; z-index:2;
+}
+
+/* ── 縦書き装飾 ── */
+.v-text {
+  position:fixed; writing-mode:vertical-rl;
+  font-size:9px; letter-spacing:.45em;
+  font-family:'Noto Serif JP', serif; font-weight:200;
+  z-index:10;
+  color:rgba(255,235,240,0.5);
+  text-shadow:0 0 8px rgba(255,255,255,.35), 0 1px 4px rgba(0,0,0,.2);
+}
+.v-text.left  { left:18px;  top:50%; transform:translateY(-50%); }
+.v-text.right { right:18px; top:50%; transform:translateY(-50%); }
+
+/* ── メインコンテナ ── */
+.container {
+  position:fixed; inset:0; z-index:10;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:20px 24px;
+}
+
+/* ── SPRING 2026 ── */
+.deco-top {
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:16px;
+  opacity:0; animation:fadeIn 1.5s ease .4s forwards;
+}
+.deco-line {
+  width:52px; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(255,215,225,0.8));
+}
+.deco-line.right {
+  background:linear-gradient(90deg, rgba(255,215,225,0.8), transparent);
+}
+.deco-diamond {
+  width:5px; height:5px;
+  background:rgba(255,210,220,0.85); transform:rotate(45deg);
+}
+.deco-text {
+  font-size:9px; letter-spacing:.45em; font-weight:300;
+  color:rgba(255,235,240,1);
+  text-shadow:
+    0 0 6px rgba(255,255,255,.95),
+    0 0 14px rgba(255,255,255,.7),
+    0 1px 0 rgba(255,255,255,.9),
+    0 2px 8px rgba(0,0,0,.55),
+    0 4px 16px rgba(0,0,0,.3);
+}
+
+/* ── 桜の季節バッジ（控えめ）── */
+.season-badge {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:3px 14px;
+  border:1px solid rgba(255,200,215,0.3);
+  border-radius:20px; font-size:8.5px; letter-spacing:.3em;
+  color:rgba(255,210,220,0.6);
+  margin-bottom:12px;
+  opacity:0; animation:fadeUp 1s ease .7s forwards;
+  background:rgba(0,0,0,0.14); backdrop-filter:blur(6px);
+}
+.season-dot {
+  width:3px; height:3px;
+  background:rgba(255,185,205,0.55); border-radius:50%;
+  animation:pulse 2.5s ease infinite;
+}
+@keyframes pulse {
+  0%,100%{ opacity:1; transform:scale(1); }
+  50%    { opacity:.35; transform:scale(.65); }
+}
+
+/* ── メインタイトル ── */
+.title-wrap {
+  text-align:center; margin-bottom:4px;
+  opacity:0;
+  animation:titleReveal 1.8s cubic-bezier(.16,1,.3,1) .9s forwards;
+}
+@keyframes titleReveal {
+  from{ opacity:0; transform:translateY(28px) scale(.96); filter:blur(8px); }
+  to  { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+}
+
+.title-main {
+  font-family:'Cormorant Garamond', serif;
+  font-size:clamp(4rem,13vw,8.5rem);
+  font-weight:400;
+  letter-spacing:.09em; line-height:1;
+  color:transparent;
+  /* グロウを控えめに → 背景写真が活きる */
+  background:linear-gradient(
+    135deg,
+    #e8a0b8 0%, #f0c890 22%, #e8a0b8 42%,
+    #e0c07a 58%, #e8a8bc 78%, #f0d8a8 100%
+  );
+  background-size:200% 200%;
+  -webkit-background-clip:text; background-clip:text;
+  animation:shimmer 7s ease infinite;
+  display:inline-block;
+  /* ハローを抑えて自然な輝き */
+  filter:
+    drop-shadow(0 0 8px rgba(255,255,255,.7))
+    drop-shadow(0 0 20px rgba(255,255,255,.5))
+    drop-shadow(0 2px 2px rgba(60,15,20,.5))
+    drop-shadow(0 6px 18px rgba(60,15,20,.35));
+}
+@keyframes shimmer {
+  0%  { background-position:0% 50%; }
+  50% { background-position:100% 50%; }
+  100%{ background-position:0% 50%; }
+}
+
+/* ── サブタイトル（ほのぼの〜）── */
+.title-jp {
+  font-family:'Noto Serif JP', serif;
+  font-size:clamp(.57rem,1.25vw,.7rem);
+  letter-spacing:.52em; font-weight:300;
+  color:rgba(255,242,246,0.95);
+  margin-top:10px; display:inline-block;
+  opacity:0; animation:fadeIn 1s ease 1.9s forwards;
+  text-shadow:
+    0 0 5px rgba(255,255,255,.9),
+    0 0 12px rgba(255,255,255,.7),
+    0 0 22px rgba(255,255,255,.5),
+    0 1px 0 rgba(255,255,255,.9),
+    0 2px 6px rgba(0,0,0,.5),
+    0 4px 14px rgba(0,0,0,.28);
+}
+
+/* ── ゴールドデバイダー ── */
+.gold-divider {
+  display:flex; align-items:center; gap:12px;
+  margin:13px 0;
+  opacity:0; animation:fadeIn 1s ease 1.7s forwards;
+}
+.gold-line {
+  width:65px; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(215,180,105,.75));
+}
+.gold-line.right {
+  background:linear-gradient(90deg, rgba(215,180,105,.75), transparent);
+}
+.gold-ornament{ display:flex; align-items:center; gap:5px; }
+.gold-diamond {
+  width:5px; height:5px;
+  background:rgba(205,170,95,.85); transform:rotate(45deg);
+}
+.gold-diamond.small {
+  width:3px; height:3px; background:rgba(230,210,145,.75);
+}
+
+/* ── キャッチコピー ── */
+.catchcopy {
+  text-align:center; margin-bottom:16px;
+  opacity:0; animation:fadeUp 1s ease 2.1s forwards;
+}
+.catchcopy p {
+  font-size:clamp(.69rem,1.55vw,.82rem);
+  color:rgba(255,242,246,0.97);
+  letter-spacing:.22em; font-weight:300; line-height:1.95;
+  text-shadow:
+    0 0 5px rgba(255,255,255,.85),
+    0 0 12px rgba(255,255,255,.6),
+    0 0 22px rgba(255,255,255,.4),
+    0 1px 0 rgba(255,255,255,.85),
+    0 2px 7px rgba(0,0,0,.55),
+    0 4px 16px rgba(0,0,0,.28);
+}
+/* 英語部分：コントラスト強化 */
+.catchcopy .en {
+  font-family:'Cormorant Garamond', serif;
+  font-style:italic;
+  font-size:clamp(.78rem,1.85vw,.96rem);
+  font-weight:300;
+  /* より明るく・影を強めにして背景から切り離す */
+  color:rgba(255,235,215,1);
+  letter-spacing:.13em; display:block; margin-top:3px;
+  text-shadow:
+    0 0 6px rgba(255,255,255,1),
+    0 0 14px rgba(255,255,255,.9),
+    0 0 26px rgba(255,255,255,.65),
+    0 0 40px rgba(255,220,180,.4),
+    0 1px 0 rgba(255,255,255,1),
+    0 2px 8px rgba(0,0,0,.65),
+    0 5px 20px rgba(0,0,0,.38);
+}
+
+/* ── 3D 桜ボタン ── */
+.recommended-btn-wrap {
+  opacity:0; animation:fadeUp 1s ease 2.45s forwards;
+  margin-bottom:16px;
+}
+
+.recommended-btn {
+  display:inline-block; text-decoration:none;
+  position:relative;
+}
+
+/* ボタン本体（上面）*/
+.btn-face {
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:10px;
+  padding:13px 42px;
+  position:relative; z-index:1;
+  border-radius:6px;
+  color:var(--brown-dark);
+  font-family:'Noto Serif JP', serif;
+  font-size:11.5px; font-weight:400;
+  letter-spacing:.26em;
+  background:linear-gradient(
+    170deg,
+    rgba(255,248,238,1) 0%,
+    rgba(255,235,218,1) 55%,
+    rgba(248,224,205,1) 100%
+  );
+  border:1px solid rgba(180,120,70,.4);
+  /* 上面の光沢ライン */
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.95) inset,
+    0 -1px 0 rgba(160,100,50,.2) inset;
+  transition:all .12s ease;
+}
+
+/* 3D 側面（擬似要素で奥行き）*/
+.btn-face::after {
+  content:'';
+  position:absolute;
+  inset:0; border-radius:6px;
+  background:transparent;
+  box-shadow:
+    /* 多層シャドウで立体感 */
+    0 4px 0 rgba(140,85,30,.7),
+    0 5px 0 rgba(120,68,20,.5),
+    0 6px 0 rgba(100,55,15,.35),
+    0 7px 0 rgba(80,42,10,.2),
+    0 9px 18px rgba(60,20,5,.45),
+    0 14px 30px rgba(60,20,5,.22);
+  transition:box-shadow .12s ease, transform .12s ease;
+  z-index:-1;
+}
+
+/* 左右の桜装飾 */
+.btn-petal-l, .btn-petal-r {
+  font-size:15px; line-height:1;
+  color:rgba(196,96,122,.65);
+  transition:all .35s ease;
+}
+
+/* ホバー：押し込み演出 */
+.recommended-btn:hover .btn-face {
+  transform:translateY(3px);
+  background:linear-gradient(
+    170deg,
+    rgba(255,245,232,1) 0%,
+    rgba(255,228,208,1) 55%,
+    rgba(245,218,198,1) 100%
+  );
+}
+.recommended-btn:hover .btn-face::after {
+  box-shadow:
+    0 1px 0 rgba(140,85,30,.7),
+    0 2px 0 rgba(120,68,20,.5),
+    0 3px 0 rgba(100,55,15,.3),
+    0 5px 12px rgba(60,20,5,.4),
+    0 8px 22px rgba(60,20,5,.18);
+}
+.recommended-btn:hover .btn-petal-l {
+  transform:rotate(-22deg) scale(1.25);
+  color:rgba(196,96,122,.9);
+}
+.recommended-btn:hover .btn-petal-r {
+  transform:rotate(22deg) scale(1.25);
+  color:rgba(196,96,122,.9);
+}
+
+.btn-label { position:relative; z-index:1; }
+.btn-sub {
+  display:block; font-size:8px; letter-spacing:.38em;
+  color:rgba(110,58,20,.55); margin-top:3px;
+  font-family:'Cormorant Garamond', serif; font-style:italic;
+  text-align:center;
+}
+
+/* ── SNS ── */
+.sns-wrap {
+  display:flex; gap:11px;
+  opacity:0; animation:fadeUp 1s ease 2.75s forwards;
+}
+.sns-link {
+  display:flex; align-items:center; justify-content:center;
+  width:38px; height:38px; border-radius:50%;
+  text-decoration:none; transition:all .3s ease;
+  background:rgba(255,255,255,0.92);
+  border:1.5px solid rgba(196,96,122,.4);
+  box-shadow:
+    0 3px 10px rgba(0,0,0,.3),
+    0 1px 3px rgba(0,0,0,.2),
+    0 0 0 1px rgba(255,255,255,.35) inset;
+}
+.sns-link svg {
+  width:15px; height:15px;
+  fill:var(--sakura-deep); transition:fill .25s ease;
+}
+.sns-link:hover {
+  background:rgba(255,255,255,1);
+  border-color:var(--sakura-deep);
+  transform:translateY(-3px) scale(1.1);
+  box-shadow:0 8px 22px rgba(196,96,122,.38), 0 3px 8px rgba(0,0,0,.22);
+}
+.sns-link:hover svg { fill:#943050; }
+
+/* ── キーフレーム ── */
+@keyframes fadeIn {
+  from{ opacity:0; } to{ opacity:1; }
+}
+@keyframes fadeUp {
+  from{ opacity:0; transform:translateY(16px); }
+  to  { opacity:1; transform:translateY(0); }
+}
+
+/* ── レスポンシブ ── */
+@media (max-width:600px) {
+  .v-text { display:none; }
+  .deco-top { margin-bottom:10px; }
+  .title-main { font-size:clamp(3.6rem,18vw,6rem); }
+  .gold-divider { margin:9px 0; }
+  .btn-face { padding:11px 30px; font-size:10.5px; letter-spacing:.18em; }
+  .sns-wrap { gap:9px; }
+  .sns-link { width:34px; height:34px; }
+  .sns-link svg { width:13px; height:13px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="bg-image"></div>
+<div class="bg-overlay"></div>
+<canvas id="sakura-canvas"></canvas>
+
+<div class="v-text left">春　・　花　・　美　・　風</div>
+<div class="v-text right">二〇二六　年　春</div>
+
+<div class="container">
+
+  <!-- SPRING 2026 -->
+  <div class="deco-top">
+    <div class="deco-line"></div>
+    <div class="deco-diamond"></div>
+    <span class="deco-text">SPRING 2026</span>
+    <div class="deco-diamond"></div>
+    <div class="deco-line right"></div>
+  </div>
+
+  <!-- 桜の季節バッジ -->
+  <div class="season-badge">
+    <span class="season-dot"></span>桜の季節<span class="season-dot"></span>
+  </div>
+
+  <!-- タイトル -->
+  <div class="title-wrap">
+    <h1 class="title-main">Honobono</h1>
+    <p class="title-jp">ほのぼの　―　心あたたまる場所</p>
+  </div>
+
+  <!-- ゴールドデバイダー -->
+  <div class="gold-divider">
+    <div class="gold-line"></div>
+    <div class="gold-ornament">
+      <div class="gold-diamond small"></div>
+      <div class="gold-diamond"></div>
+      <div class="gold-diamond small"></div>
+    </div>
+    <div class="gold-line right"></div>
+  </div>
+
+  <!-- キャッチコピー -->
+  <div class="catchcopy">
+    <p>やさしい光と、静かな時間が流れる場所へ。</p>
+    <span class="en">Where gentle warmth meets quiet beauty.</span>
+  </div>
+
+  <!-- 3D 桜ボタン -->
+  <div class="recommended-btn-wrap">
+    <a href="sakura.html" class="recommended-btn">
+      <div class="btn-face">
+        <span class="btn-petal-l">✿</span>
+        <span class="btn-label">
+          おすすめ記事：桜の完全ガイド
+          <span class="btn-sub">Cherry Blossom Complete Guide</span>
+        </span>
+        <span class="btn-petal-r">✿</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- SNS（6つ）-->
+  <div class="sns-wrap">
+
+    <!-- X -->
+    <a href="#" class="sns-link" aria-label="X">
+      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    </a>
+
+    <!-- Instagram -->
+    <a href="#" class="sns-link" aria-label="Instagram">
+      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+    </a>
+
+    <!-- YouTube -->
+    <a href="#" class="sns-link" aria-label="YouTube">
+      <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+    </a>
+
+    <!-- note -->
+    <a href="#" class="sns-link" aria-label="note">
+      <svg viewBox="0 0 24 24"><path d="M8 2C4.686 2 2 4.686 2 8v8c0 3.314 2.686 6 6 6h8c3.314 0 6-2.686 6-6V8c0-3.314-2.686-6-6-6H8zm0 2h8c2.21 0 4 1.79 4 4v8c0 2.21-1.79 4-4 4H8c-2.21 0-4-1.79-4-4V8c0-2.21 1.79-4 4-4zm-1 4v2h10V8H7zm0 4v2h7v-2H7z"/></svg>
+    </a>
+
+    <!-- Threads -->
+    <a href="#" class="sns-link" aria-label="Threads">
+      <svg viewBox="0 0 24 24"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.473 12.01v-.017c.027-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-.557-2-1.493-3.502-2.787-4.463-1.362-1.015-3.144-1.532-5.3-1.547-2.468.018-4.617.857-6.177 2.428C4.766 5.99 3.995 8.44 3.973 12c.022 3.558.793 6.008 2.252 7.448 1.56 1.57 3.71 2.41 6.176 2.427 2.213-.016 3.769-.535 4.978-1.687.945-.899 1.654-2.303 2.099-4.175.127-.533.225-1.09.29-1.655A8.855 8.855 0 0 1 17.5 15c-1.89 0-3.448-.677-4.51-1.958-.943-1.13-1.43-2.69-1.43-4.54 0-1.83.513-3.316 1.482-4.299.84-.853 2.01-1.303 3.386-1.303 1.743 0 3.077.699 3.865 2.023.677 1.12.997 2.685.952 4.654-.012.525-.05 1.048-.113 1.555.494.071.956.212 1.37.42.215-1.063.325-2.17.325-3.302C22.826 3.627 18.07 0 12.186 0zm1.124 10.22c0 2.496-.913 3.977-2.435 3.977-1.524 0-2.435-1.48-2.435-3.977 0-2.495.911-3.975 2.435-3.975 1.522 0 2.435 1.48 2.435 3.975z"/></svg>
+    </a>
+
+    <!-- Pinterest -->
+    <a href="#" class="sns-link" aria-label="Pinterest">
+      <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+    </a>
+
+  </div>
+</div>
+
+<!-- Navigation（将来使用予定）-->
+<!--
+<nav>
+  <a href="#" class="nav-item">About</a>
+  <a href="#" class="nav-item">Works</a>
+  <a href="hana.html" class="nav-item">図解</a>
+  <a href="flower-calendar.html" class="nav-item">カレンダー</a>
+  <a href="#" class="nav-item">Blog</a>
+  <a href="#" class="nav-item">Contact</a>
+</nav>
+-->
+
+<script>
+/* ── カスタムカーソル ── */
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => {
+  mx=e.clientX; my=e.clientY;
+  cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+});
+(function animRing(){
+  rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+
+/* ── 花びら：エリア指定版 ── */
+const canvas = document.getElementById('sakura-canvas');
+const ctx    = canvas.getContext('2d');
+
+function resize(){
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+/*
+ * 画像の構成（16:9横長）を想定したゾーン定義
+ * 画面を割合で指定：
+ *   ZONE A（青空）  : x 0〜55%, y 0〜38%   ← 空の明るいエリア
+ *   ZONE B（幹付近）: x 55〜75%, y 20〜70%  ← 太い幹あたり
+ *   ZONE C（タイトル上）: x 25〜75%, y 0〜18%  ← タイトルの頭上
+ * 各ゾーンに常時3枚ずつ、合計9枚を管理
+ */
+
+const ZONES = [
+  // 青空エリア（左寄り上部）
+  { xMin:0.05, xMax:0.50, yMin:0.02, yMax:0.40, count:3 },
+  // 幹付近（右寄り中段）
+  { xMin:0.55, xMax:0.80, yMin:0.15, yMax:0.72, count:3 },
+  // タイトル上（中央上部）
+  { xMin:0.28, xMax:0.72, yMin:0.00, yMax:0.20, count:3 },
+];
+
+class ZonePetal {
+  constructor(zone){
+    this.zone = zone;
+    this.spawn();
+  }
+
+  spawn(){
+    const z  = this.zone;
+    const W  = canvas.width;
+    const H  = canvas.height;
+
+    // ゾーン内にランダム配置
+    this.x = W * (z.xMin + Math.random() * (z.xMax - z.xMin));
+    // y はゾーン上端より少し上から降り始める
+    this.y = H * (z.yMin - 0.06 + Math.random() * 0.06);
+
+    this.size       = Math.random() * 6 + 5;        // やや大きめ
+    this.speedY     = Math.random() * 0.35 + 0.18;
+    this.speedX     = (Math.random() - 0.5) * 0.18;
+    this.angle      = Math.random() * Math.PI * 2;
+    this.angleSpeed = (Math.random() - 0.5) * 0.007;
+    this.swing      = Math.random() * 1.8 + 0.6;
+    this.swingSpeed = Math.random() * 0.010 + 0.003;
+    this.swingOff   = Math.random() * Math.PI * 2;
+    this.opacity    = Math.random() * 0.35 + 0.52;  // 見やすく濃いめ
+    this.opacitySpd = (Math.random() - 0.5) * 0.0015;
+
+    const cols = [
+      [255,175,190],[255,155,175],[242,120,148],
+      [255,205,215],[250,188,202],[246,168,188]
+    ];
+    this.color = cols[Math.floor(Math.random() * cols.length)];
+  }
+
+  update(){
+    this.swingOff += this.swingSpeed;
+    this.x += this.speedX + Math.sin(this.swingOff) * this.swing * 0.055;
+    this.y += this.speedY;
+    this.angle += this.angleSpeed;
+    this.opacity += this.opacitySpd;
+    if(this.opacity > 0.92) this.opacitySpd *= -1;
+    if(this.opacity < 0.38) this.opacitySpd *= -1;
+
+    // ゾーン下端を超えたら再スポーン
+    const z = this.zone;
+    if(this.y > canvas.height * (z.yMax + 0.06)){
+      this.spawn();
+    }
+    // ゾーンの左右を大きく外れたら戻す
+    if(this.x < canvas.width * (z.xMin - 0.08) ||
+       this.x > canvas.width * (z.xMax + 0.08)){
+      this.spawn();
+    }
+  }
+
+  draw(){
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle);
+    ctx.globalAlpha = this.opacity;
+
+    const [r,g,b] = this.color;
+    const s = this.size;
+
+    ctx.beginPath();
+    ctx.moveTo(0, -s);
+    ctx.bezierCurveTo( s*.8, -s*.8,  s*.8, s*.3, 0, s*.5);
+    ctx.bezierCurveTo(-s*.8,  s*.3, -s*.8,-s*.8, 0,  -s);
+    ctx.closePath();
+
+    const gr = ctx.createRadialGradient(0,-s*.2,0, 0,0,s);
+    gr.addColorStop(0, `rgba(255,245,248,${this.opacity})`);
+    gr.addColorStop(.5,`rgba(${r},${g},${b},${this.opacity})`);
+    gr.addColorStop(1, `rgba(${Math.max(r-28,0)},${Math.max(g-28,0)},${Math.max(b-18,0)},${this.opacity*.82})`);
+    ctx.fillStyle = gr;
+    ctx.fill();
+
+    // 葉脈
+    ctx.beginPath();
+    ctx.moveTo(0,-s); ctx.lineTo(0,s*.42);
+    ctx.strokeStyle = `rgba(${Math.max(r-45,0)},${Math.max(g-45,0)},${Math.max(b-32,0)},${this.opacity*.28})`;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+}
+
+// 各ゾーンに指定数の花びらを生成
+const petals = [];
+ZONES.forEach(zone => {
+  for(let i = 0; i < zone.count; i++){
+    const p = new ZonePetal(zone);
+    // 初期位置をゾーン内に分散させる
+    p.y = canvas.height * (zone.yMin + Math.random() * (zone.yMax - zone.yMin));
+    petals.push(p);
+  }
+});
+
+(function animate(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  petals.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animate);
+})();
+
+/* ── タイトルホバー3D ── */
+const title = document.querySelector('.title-main');
+title.addEventListener('mousemove', e => {
+  const r = title.getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width  - 0.5;
+  const y = (e.clientY - r.top)  / r.height - 0.5;
+  title.style.transform = `perspective(600px) rotateY(${x*7}deg) rotateX(${-y*3.5}deg) scale(1.018)`;
+  title.style.transition = 'transform .1s ease';
+});
+title.addEventListener('mouseleave', () => {
+  title.style.transform = 'perspective(600px) rotateY(0) rotateX(0) scale(1)';
+  title.style.transition = 'transform .5s ease';
+});
+</script>
+</body>
+</html>
