@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026年4月 ほのぼの運勢カレンダー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* =============================================
+   DESIGN TOKENS
+   Art direction: 日本の伝統暦×春の花ブログ → 和モダン・温かみ
+   Palette: 桜色ピンク・墨色・和紙ベージュ
+   Typography: Noto Serif JP (display) + Noto Sans JP (body)
+   Density: spacious
+============================================= */
+:root, [data-theme="light"] {
+  --color-bg:             #faf8f5;
+  --color-surface:        #fdfcfa;
+  --color-surface-2:      #fff;
+  --color-surface-offset: #f3ede6;
+  --color-surface-offset-2: #ede5dc;
+  --color-divider:        #ddd5ca;
+  --color-border:         #d0c8be;
+  --color-text:           #2a2016;
+  --color-text-muted:     #7a7060;
+  --color-text-faint:     #b8b0a4;
+  --color-text-inverse:   #fdfcf8;
+  /* 桜ピンク */
+  --color-primary:        #c05080;
+  --color-primary-hover:  #a03060;
+  --color-primary-light:  #fce8f0;
+  /* 金運・寅 */
+  --color-gold:           #b07800;
+  --color-gold-light:     #fef5d8;
+  /* 吉 */
+  --color-success:        #4a7a28;
+  --color-success-light:  #edf5e3;
+  /* 凶 */
+  --color-error:          #922828;
+  --color-error-light:    #fdeaea;
+  /* 注意 */
+  --color-warning:        #9a5800;
+  --color-warning-light:  #fef3e0;
+  /* 月相 */
+  --color-moon:           #5570a8;
+  --color-moon-light:     #eaeefc;
+  /* 節気 */
+  --color-season:         #3a7a5a;
+  --color-season-light:   #e4f4ec;
+
+  --font-display: 'Noto Serif JP', 'Yu Mincho', serif;
+  --font-body: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+
+  --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
+  --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
+  --text-base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
+  --text-lg:   clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);
+  --text-xl:   clamp(1.5rem,   1.2rem  + 1.25vw, 2.25rem);
+  --text-2xl:  clamp(2rem,     1.2rem  + 2.5vw,  3.5rem);
+
+  --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
+  --space-4: 1rem;    --space-5: 1.25rem; --space-6: 1.5rem;
+  --space-8: 2rem;    --space-10: 2.5rem; --space-12: 3rem;
+  --space-16: 4rem;
+
+  --radius-sm: 0.375rem; --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 3px oklch(0.2 0.02 50 / 0.07);
+  --shadow-md: 0 4px 12px oklch(0.2 0.02 50 / 0.10);
+  --shadow-lg: 0 12px 32px oklch(0.2 0.02 50 / 0.14);
+
+  --content-default: 960px;
+  --content-wide: 1200px;
+  --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-theme="dark"] {
+  --color-bg:             #1a1712;
+  --color-surface:        #201d18;
+  --color-surface-2:      #252119;
+  --color-surface-offset: #1e1b15;
+  --color-surface-offset-2: #23201a;
+  --color-divider:        #2e2b24;
+  --color-border:         #3a3730;
+  --color-text:           #d8d0c4;
+  --color-text-muted:     #8a8278;
+  --color-text-faint:     #5a5650;
+  --color-text-inverse:   #1a1712;
+  --color-primary:        #e080a8;
+  --color-primary-hover:  #f0a0c0;
+  --color-primary-light:  #3a2030;
+  --color-gold:           #e0aa40;
+  --color-gold-light:     #2e280e;
+  --color-success:        #72b050;
+  --color-success-light:  #1a2812;
+  --color-error:          #e06060;
+  --color-error-light:    #2e1010;
+  --color-warning:        #e09040;
+  --color-warning-light:  #2a1e08;
+  --color-moon:           #8090d0;
+  --color-moon-light:     #141c30;
+  --color-season:         #60b888;
+  --color-season-light:   #102018;
+  --shadow-sm: 0 1px 3px oklch(0 0 0 / 0.25);
+  --shadow-md: 0 4px 12px oklch(0 0 0 / 0.35);
+  --shadow-lg: 0 12px 32px oklch(0 0 0 / 0.45);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-bg: #1a1712; --color-surface: #201d18; --color-surface-2: #252119;
+    --color-surface-offset: #1e1b15; --color-divider: #2e2b24; --color-border: #3a3730;
+    --color-text: #d8d0c4; --color-text-muted: #8a8278; --color-text-faint: #5a5650;
+    --color-primary: #e080a8; --color-primary-light: #3a2030;
+    --color-gold: #e0aa40; --color-gold-light: #2e280e;
+    --color-success: #72b050; --color-success-light: #1a2812;
+    --color-error: #e06060; --color-error-light: #2e1010;
+    --color-warning: #e09040; --color-warning-light: #2a1e08;
+    --color-moon: #8090d0; --color-moon-light: #141c30;
+    --color-season: #60b888; --color-season-light: #102018;
+  }
+}
+
+/* BASE */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: none; text-size-adjust: none; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; scroll-padding-top: var(--space-16); }
+body { min-height: 100dvh; line-height: 1.7; font-family: var(--font-body); font-size: var(--text-base); color: var(--color-text); background-color: var(--color-bg); }
+img { display: block; max-width: 100%; height: auto; }
+h1,h2,h3,h4,h5 { text-wrap: balance; line-height: 1.3; font-family: var(--font-display); }
+p, li { text-wrap: pretty; }
+a { color: var(--color-primary); text-decoration: none; transition: color var(--transition); }
+a:hover { color: var(--color-primary-hover); }
+button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; transition: color var(--transition), background var(--transition); }
+table { border-collapse: collapse; width: 100%; }
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: var(--radius-sm); }
+::selection { background: oklch(from var(--color-primary) l c h / 0.2); color: var(--color-text); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+/* SKIP LINK */
+.skip-link { position: absolute; top: -40px; left: var(--space-4); background: var(--color-primary); color: var(--color-text-inverse); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-size: var(--text-sm); font-weight: 700; z-index: 1000; transition: top var(--transition); }
+.skip-link:focus { top: var(--space-4); }
+
+/* HEADER */
+.site-header { position: sticky; top: 0; z-index: 100; background: oklch(from var(--color-bg) l c h / 0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--color-divider); padding: var(--space-3) var(--space-6); }
+.header-inner { max-width: var(--content-wide); margin-inline: auto; display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
+.site-logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; color: var(--color-text); }
+.site-logo svg { flex-shrink: 0; }
+.site-logo-text { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; }
+.header-controls { display: flex; align-items: center; gap: var(--space-3); }
+.theme-toggle { width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); background: var(--color-surface-offset); }
+.theme-toggle:hover { background: var(--color-surface-offset-2); color: var(--color-text); }
+
+/* HERO */
+.hero { background: linear-gradient(135deg in oklch, var(--color-primary-light) 0%, var(--color-gold-light) 50%, var(--color-season-light) 100%); padding: clamp(var(--space-10), 6vw, var(--space-16)) var(--space-6); text-align: center; border-bottom: 1px solid var(--color-divider); position: relative; overflow: hidden; }
+.hero::before { content: '🌸'; position: absolute; font-size: 8rem; opacity: 0.06; top: -1rem; left: -2rem; transform: rotate(-20deg); pointer-events: none; }
+.hero::after { content: '🌸'; position: absolute; font-size: 8rem; opacity: 0.06; bottom: -1rem; right: -2rem; transform: rotate(20deg); pointer-events: none; }
+.hero-inner { max-width: var(--content-default); margin-inline: auto; position: relative; }
+.hero-eyebrow { font-size: var(--text-sm); font-weight: 500; color: var(--color-primary); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: var(--space-3); }
+.hero-title { font-size: var(--text-2xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-4); }
+.hero-subtitle { font-size: var(--text-base); color: var(--color-text-muted); margin-bottom: var(--space-6); max-width: 54ch; margin-inline: auto; }
+.hero-tags { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: center; }
+.hero-tag { font-size: var(--text-xs); font-weight: 500; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); background: oklch(from var(--color-bg) l c h / 0.8); border: 1px solid var(--color-border); color: var(--color-text-muted); }
+
+/* MAIN LAYOUT */
+.main-content { max-width: var(--content-wide); margin-inline: auto; padding: var(--space-8) var(--space-6) var(--space-16); }
+.section { margin-bottom: var(--space-12); }
+.section-title { font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-2); padding-bottom: var(--space-3); border-bottom: 2px solid var(--color-primary); display: flex; align-items: center; gap: var(--space-2); }
+.section-number { font-size: var(--text-sm); font-weight: 700; color: var(--color-text-inverse); background: var(--color-primary); width: 28px; height: 28px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+/* SUMMARY CARDS */
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: var(--space-4); margin-top: var(--space-6); }
+.summary-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); box-shadow: var(--shadow-sm); }
+.summary-card-title { font-size: var(--text-base); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-3); display: flex; align-items: center; gap: var(--space-2); }
+.summary-card-body { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.7; }
+.summary-card-body strong { color: var(--color-text); }
+.card-numerology { border-top: 3px solid var(--color-moon); }
+.card-astro { border-top: 3px solid var(--color-primary); }
+.card-fengshui { border-top: 3px solid var(--color-season); }
+
+/* EVENT TABLE */
+.event-table-wrap { overflow-x: auto; margin-top: var(--space-5); border-radius: var(--radius-lg); border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); }
+.event-table { font-size: var(--text-sm); }
+.event-table th { background: var(--color-surface-offset); font-weight: 700; padding: var(--space-3) var(--space-4); text-align: left; color: var(--color-text-muted); font-size: var(--text-xs); letter-spacing: 0.06em; border-bottom: 1px solid var(--color-divider); }
+.event-table td { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-divider); vertical-align: middle; }
+.event-table tr:last-child td { border-bottom: none; }
+.event-table tr:hover td { background: var(--color-surface-offset); }
+.event-date { font-weight: 700; white-space: nowrap; color: var(--color-text); }
+.event-name { color: var(--color-text); }
+.event-note { font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 2px; }
+
+/* TOP 3 DAYS */
+.top3-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); gap: var(--space-4); margin-top: var(--space-6); }
+.top3-card { border-radius: var(--radius-xl); padding: var(--space-5); box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
+.top3-card::before { content: attr(data-rank); position: absolute; top: var(--space-3); right: var(--space-4); font-family: var(--font-display); font-size: 3rem; font-weight: 700; opacity: 0.08; line-height: 1; }
+.top3-card.gold { background: linear-gradient(135deg in oklch, var(--color-gold-light), var(--color-surface-2)); border: 1px solid var(--color-gold); }
+.top3-card.pink { background: linear-gradient(135deg in oklch, var(--color-primary-light), var(--color-surface-2)); border: 1px solid var(--color-primary); }
+.top3-date { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-2); }
+.top3-title { font-size: var(--text-sm); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-3); }
+.top3-tags { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-bottom: var(--space-3); }
+.top3-tag { font-size: var(--text-xs); font-weight: 500; padding: 2px var(--space-2); border-radius: var(--radius-full); }
+.tag-gold { background: var(--color-gold-light); color: var(--color-gold); border: 1px solid var(--color-gold); }
+.tag-pink { background: var(--color-primary-light); color: var(--color-primary); border: 1px solid var(--color-primary); }
+.tag-green { background: var(--color-success-light); color: var(--color-success); border: 1px solid var(--color-success); }
+.tag-moon { background: var(--color-moon-light); color: var(--color-moon); border: 1px solid var(--color-moon); }
+.tag-warning { background: var(--color-warning-light); color: var(--color-warning); border: 1px solid var(--color-warning); }
+.tag-error { background: var(--color-error-light); color: var(--color-error); border: 1px solid var(--color-error); }
+.tag-neutral { background: var(--color-surface-offset); color: var(--color-text-muted); border: 1px solid var(--color-border); }
+.top3-body { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.65; }
+
+/* DOUBLE CHECK */
+.double-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(420px, 100%), 1fr)); gap: var(--space-6); margin-top: var(--space-6); }
+.double-section-title { font-size: var(--text-base); font-weight: 700; margin-bottom: var(--space-3); display: flex; align-items: center; gap: var(--space-2); }
+.double-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); margin-bottom: var(--space-4); box-shadow: var(--shadow-sm); }
+.double-card.good { border-left: 4px solid var(--color-success); }
+.double-card.bad { border-left: 4px solid var(--color-error); }
+.double-card-date { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-2); }
+.double-card-sub { font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-3); }
+.double-card-tags { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-bottom: var(--space-3); }
+.double-card-body { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.65; }
+
+/* CALENDAR GRID */
+.calendar-nav { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-6); }
+.calendar-filter-btn { font-size: var(--text-xs); font-weight: 600; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); border: 1.5px solid var(--color-border); color: var(--color-text-muted); cursor: pointer; transition: all var(--transition); }
+.calendar-filter-btn:hover, .calendar-filter-btn.active { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-text-inverse); }
+
+.day-list { display: flex; flex-direction: column; gap: var(--space-4); }
+.day-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-sm); transition: box-shadow var(--transition); }
+.day-card:hover { box-shadow: var(--shadow-md); }
+.day-card.rank-3 { border-top: 3px solid var(--color-gold); }
+.day-card.rank-2 { border-top: 3px solid var(--color-primary); }
+.day-card.rank-1 { border-top: 3px solid var(--color-success); }
+.day-card.rank-warn { border-top: 3px solid var(--color-warning); }
+.day-card.rank-bad { border-top: 3px solid var(--color-error); }
+
+.day-header { display: flex; align-items: flex-start; gap: var(--space-4); padding: var(--space-5) var(--space-5) var(--space-4); flex-wrap: wrap; }
+.day-date-block { flex-shrink: 0; }
+.day-date-num { font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; line-height: 1; color: var(--color-text); }
+.day-date-meta { font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-1); }
+.day-title-block { flex: 1; min-width: 200px; }
+.day-rank-badge { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-xs); font-weight: 700; padding: 3px var(--space-3); border-radius: var(--radius-full); margin-bottom: var(--space-2); }
+.badge-3 { background: var(--color-gold-light); color: var(--color-gold); }
+.badge-2 { background: var(--color-primary-light); color: var(--color-primary); }
+.badge-1 { background: var(--color-success-light); color: var(--color-success); }
+.badge-warn { background: var(--color-warning-light); color: var(--color-warning); }
+.badge-bad { background: var(--color-error-light); color: var(--color-error); }
+.day-title { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-2); }
+.day-tags { display: flex; flex-wrap: wrap; gap: var(--space-1); }
+.day-special-badges { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.moon-badge { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-xs); font-weight: 700; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); background: var(--color-moon-light); color: var(--color-moon); border: 1px solid var(--color-moon); }
+.season-badge { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-xs); font-weight: 700; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); background: var(--color-season-light); color: var(--color-season); border: 1px solid var(--color-season); }
+
+/* ACTION TABLE */
+.day-body { padding: 0 var(--space-5) var(--space-5); }
+.action-table-wrap { border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-4); }
+.action-table { font-size: var(--text-sm); }
+.action-table th { background: var(--color-surface-offset); padding: var(--space-2) var(--space-3); font-size: var(--text-xs); font-weight: 700; color: var(--color-text-muted); letter-spacing: 0.05em; text-align: left; border-bottom: 1px solid var(--color-divider); }
+.action-table td { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-divider); vertical-align: middle; }
+.action-table tr:last-child td { border-bottom: none; }
+.action-mark { font-weight: 700; text-align: center; font-size: var(--text-base); }
+.mark-best { color: var(--color-success); }
+.mark-good { color: var(--color-gold); }
+.mark-cond { color: var(--color-warning); }
+.mark-bad { color: var(--color-error); }
+
+/* BEST TIME */
+.best-time { display: flex; align-items: flex-start; gap: var(--space-3); background: var(--color-surface-offset); border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-4); font-size: var(--text-sm); }
+.best-time-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+.best-time-text strong { color: var(--color-text); display: block; font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); margin-bottom: 2px; }
+
+/* WHY BOX */
+.why-box { background: var(--color-surface-2); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-4); }
+.why-box-title { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em; color: var(--color-text-muted); margin-bottom: var(--space-2); }
+.why-box-body { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.75; }
+
+/* EVIDENCE */
+details.evidence { border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; }
+details.evidence summary { padding: var(--space-3) var(--space-4); font-size: var(--text-xs); font-weight: 700; color: var(--color-text-muted); cursor: pointer; background: var(--color-surface-offset); list-style: none; display: flex; align-items: center; gap: var(--space-2); user-select: none; }
+details.evidence summary::-webkit-details-marker { display: none; }
+details.evidence summary::before { content: '▶'; font-size: 0.65em; transition: transform var(--transition); }
+details.evidence[open] summary::before { transform: rotate(90deg); }
+details.evidence summary:hover { background: var(--color-surface-offset-2); }
+.evidence-body { padding: var(--space-4); background: var(--color-surface); }
+.evidence-list { list-style: none; display: flex; flex-direction: column; gap: var(--space-2); }
+.evidence-item { display: flex; gap: var(--space-3); font-size: var(--text-sm); }
+.evidence-label { font-weight: 700; color: var(--color-text-muted); font-size: var(--text-xs); white-space: nowrap; min-width: 70px; padding-top: 2px; }
+.evidence-value { color: var(--color-text); line-height: 1.6; }
+
+/* PURPOSE BEST DAYS */
+.purpose-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: var(--space-4); margin-top: var(--space-6); }
+.purpose-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); box-shadow: var(--shadow-sm); }
+.purpose-icon { font-size: 1.5rem; margin-bottom: var(--space-3); }
+.purpose-title { font-size: var(--text-base); font-weight: 700; margin-bottom: var(--space-3); color: var(--color-text); }
+.purpose-list { list-style: none; display: flex; flex-direction: column; gap: var(--space-2); }
+.purpose-item { font-size: var(--text-sm); display: flex; gap: var(--space-2); }
+.purpose-rank { font-weight: 700; color: var(--color-primary); min-width: 18px; }
+.purpose-body { color: var(--color-text-muted); }
+.purpose-body strong { color: var(--color-text); }
+
+/* KYO TABLE */
+.kyo-table-wrap { border: 1px solid var(--color-border); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-sm); margin-top: var(--space-4); }
+.kyo-table th { background: var(--color-error-light); color: var(--color-error); font-size: var(--text-xs); font-weight: 700; padding: var(--space-3) var(--space-4); text-align: left; border-bottom: 1px solid var(--color-divider); }
+.kyo-table td { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-divider); font-size: var(--text-sm); vertical-align: middle; }
+.kyo-table tr:last-child td { border-bottom: none; }
+.kyo-table tr:hover td { background: var(--color-surface-offset); }
+.kyo-date { font-weight: 700; white-space: nowrap; }
+.kyo-full { background: var(--color-error-light); }
+.kyo-full .kyo-date { color: var(--color-error); }
+.kyo-partial { background: var(--color-surface); }
+.kyo-partial .kyo-date { color: var(--color-warning); }
+.warn-table th { background: var(--color-warning-light); color: var(--color-warning); font-size: var(--text-xs); font-weight: 700; padding: var(--space-3) var(--space-4); text-align: left; border-bottom: 1px solid var(--color-divider); }
+.warn-table td { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-divider); font-size: var(--text-sm); vertical-align: middle; }
+.warn-table tr:last-child td { border-bottom: none; }
+.warn-table tr:hover td { background: var(--color-surface-offset); }
+
+/* DOYOU SECTION */
+.doyou-card { background: linear-gradient(135deg in oklch, var(--color-season-light), var(--color-surface-2)); border: 1px solid var(--color-season); border-radius: var(--radius-xl); padding: var(--space-6); margin-top: var(--space-6); box-shadow: var(--shadow-sm); }
+.doyou-title { font-size: var(--text-lg); font-weight: 700; color: var(--color-season); margin-bottom: var(--space-5); display: flex; align-items: center; gap: var(--space-2); }
+.doyou-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: var(--space-4); }
+.doyou-col h4 { font-size: var(--text-sm); font-weight: 700; margin-bottom: var(--space-3); padding-bottom: var(--space-2); border-bottom: 1px solid var(--color-divider); }
+.doyou-col h4.ng { color: var(--color-error); }
+.doyou-col h4.ok { color: var(--color-success); }
+.doyou-col h4.todo { color: var(--color-moon); }
+.doyou-list { list-style: none; display: flex; flex-direction: column; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-muted); }
+.doyou-list li::before { content: '・'; }
+
+/* FOOTER */
+.site-footer { background: var(--color-surface-offset); border-top: 1px solid var(--color-divider); padding: var(--space-8) var(--space-6); text-align: center; }
+.footer-inner { max-width: var(--content-default); margin-inline: auto; }
+.footer-logo { display: flex; align-items: center; justify-content: center; gap: var(--space-2); margin-bottom: var(--space-4); font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; }
+.footer-sources { font-size: var(--text-xs); color: var(--color-text-faint); line-height: 1.8; margin-bottom: var(--space-4); }
+.footer-disclaimer { font-size: var(--text-xs); color: var(--color-text-faint); max-width: 52ch; margin-inline: auto; line-height: 1.7; }
+.footer-version { font-size: var(--text-xs); color: var(--color-text-faint); margin-top: var(--space-4); }
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .main-content { padding: var(--space-6) var(--space-4) var(--space-12); }
+  .day-header { gap: var(--space-3); }
+  .day-date-num { font-size: 2rem; }
+  .hero-title { font-size: var(--text-xl); }
+  .double-grid { grid-template-columns: 1fr; }
+}
+
+/* SCROLL ANIMATION */
+.fade-in { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { .fade-in { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">メインコンテンツへスキップ</a>
+
+<!-- HEADER -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="#" class="site-logo" aria-label="ほのぼの運勢カレンダー トップへ">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+        <circle cx="16" cy="16" r="5" fill="currentColor" opacity="0.8"/>
+        <path d="M16 2 L17.5 8 L16 7 L14.5 8 Z" fill="currentColor"/>
+        <path d="M16 30 L17.5 24 L16 25 L14.5 24 Z" fill="currentColor"/>
+        <path d="M2 16 L8 14.5 L7 16 L8 17.5 Z" fill="currentColor"/>
+        <path d="M30 16 L24 14.5 L25 16 L24 17.5 Z" fill="currentColor"/>
+        <path d="M5 5 L9.5 10.5 L8.5 9 L10 8 Z" fill="currentColor" opacity="0.6"/>
+        <path d="M27 27 L22.5 21.5 L23.5 23 L22 24 Z" fill="currentColor" opacity="0.6"/>
+        <path d="M27 5 L21.5 9.5 L23 8.5 L24 10 Z" fill="currentColor" opacity="0.6"/>
+        <path d="M5 27 L10.5 22.5 L9 23.5 L8 22 Z" fill="currentColor" opacity="0.6"/>
+      </svg>
+      <span class="site-logo-text">ほのぼの運勢カレンダー</span>
+    </a>
+    <div class="header-controls">
+      <button class="theme-toggle" data-theme-toggle aria-label="ダークモードに切り替え">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">令和8年 ／ 2026 April</p>
+    <h1 class="hero-title" id="hero-title">🌸 2026年4月<br>ほのぼの運勢カレンダー</h1>
+    <p class="hero-subtitle">暦・占星術・天文データ等 全11系統を統合。<br>日々の行動判断をシンプルに、ほのぼのと。</p>
+    <div class="hero-tags">
+      <span class="hero-tag">六曜</span><span class="hero-tag">十二直</span><span class="hero-tag">二十八宿</span>
+      <span class="hero-tag">一粒万倍日</span><span class="hero-tag">選日</span><span class="hero-tag">月相</span>
+      <span class="hero-tag">九星気学</span><span class="hero-tag">西洋占星術</span><span class="hero-tag">数秘術</span>
+      <span class="hero-tag">節気・雑節</span><span class="hero-tag">風水参考</span>
+    </div>
+  </div>
+</section>
+
+<main id="main" class="main-content">
+
+<!-- SECTION 1: サマリー -->
+<section class="section fade-in" aria-labelledby="sec1-title">
+  <h2 class="section-title" id="sec1-title"><span class="section-number" aria-hidden="true">1</span>4月の統合サマリー</h2>
+
+  <div class="summary-grid">
+    <!-- 数秘術 -->
+    <div class="summary-card card-numerology">
+      <div class="summary-card-title">🔢 数秘術（参考）月運数：5</div>
+      <div class="summary-card-body">
+        2026年＝<strong>年運1（新サイクル）</strong>× 4月＝<strong>月運5（変化・情報発信活性化）</strong><br><br>
+        「5」の月は新しい動きへの追い風。ただし散漫になりやすい。吉日に集中して動き、凶日は完全静止するメリハリが特に重要。<br><br>
+        <small>※数秘術は流派により11・22などのマスターナンバーを維持する場合もあり参考扱い</small>
+      </div>
+    </div>
+    <!-- 西洋占星術 -->
+    <div class="summary-card card-astro" style="grid-column: span 1; min-width: 0;">
+      <div class="summary-card-title">⭐ 西洋占星術 確定天体イベント一覧</div>
+      <div class="summary-card-body">
+        <div class="event-table-wrap" style="margin-top: var(--space-2);">
+          <table class="event-table">
+            <thead><tr><th>日付・時刻（JST）</th><th>イベント</th></tr></thead>
+            <tbody>
+              <tr><td class="event-date">4/ 2（木）11:12</td><td><span class="event-name">🌕 満月（乙女座12°21'）ピンクムーン</span></td></tr>
+              <tr><td class="event-date">4/10（金）04:37</td><td><span class="event-name">🔥 火星が牡羊座入り</span></td></tr>
+              <tr><td class="event-date">4/13（月）14:30頃</td><td><span class="event-name">⚠️ 火星×海王星（タイト近接・牡羊座）</span></td></tr>
+              <tr><td class="event-date">4/15（水）12:22</td><td><span class="event-name">💬 水星が牡羊座入り</span></td></tr>
+              <tr><td class="event-date">4/17（金）20:52</td><td><span class="event-name">🌑 新月（牡羊座27°29'）</span></td></tr>
+              <tr><td class="event-date">4/20（月）07:44</td><td><span class="event-name">⚠️ 火星×土星（近接1°18'）ピーク</span></td></tr>
+              <tr><td class="event-date">4/20（月）10:40</td><td><span class="event-name">☀️ 太陽が牡牛座入り</span></td></tr>
+              <tr><td class="event-date">4/24（金）13:04</td><td><span class="event-name">💕 金星が双子座入り</span></td></tr>
+              <tr><td class="event-date">4/26（日）09:52</td><td><span class="event-name">🌀 天王星が双子座本格入り（〜2033年）</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size: var(--text-xs); color: var(--color-text-faint); margin-top: var(--space-3);">※astrotheoros.com・JPLデータ・UTC→JST換算確定値。火星×土星の影響期間：4月2日〜5月11日。火星×海王星の影響期間：4月11日〜15日頃。</p>
+      </div>
+    </div>
+    <!-- 風水 -->
+    <div class="summary-card card-fengshui">
+      <div class="summary-card-title">🧭 風水（参考）2026年4月</div>
+      <div class="summary-card-body">
+        五黄殺・暗剣殺の方位は月盤・年盤・流派により変動します。個人の本命星での確認を推奨。<br><br>
+        <strong>近場（数km以内）は影響なし。</strong>長距離遠征の方向確認にのみ参考として使用してください。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2: 最重要3日 -->
+<section class="section fade-in" aria-labelledby="sec2-title">
+  <h2 class="section-title" id="sec2-title"><span class="section-number" aria-hidden="true">2</span>今月の最重要日（3日だけ覚える）</h2>
+  <div class="top3-grid">
+
+    <div class="top3-card gold" data-rank="1">
+      <div class="top3-date">🌸🌸🌸 4月22日（水）</div>
+      <div class="top3-title">今月最強の金運・収益化日</div>
+      <div class="top3-tags">
+        <span class="top3-tag tag-gold">寅の日</span>
+        <span class="top3-tag tag-pink">友引</span>
+        <span class="top3-tag tag-green">天恩日</span>
+        <span class="top3-tag tag-gold">十二直「開」</span>
+        <span class="top3-tag tag-neutral">参宿</span>
+      </div>
+      <div class="top3-body">5重吉。Note販売・広告設定・収益ツール導入・財布新調はこの日に集中。</div>
+    </div>
+
+    <div class="top3-card pink" data-rank="2">
+      <div class="top3-date">🌸🌸🌸 4月11日（土）</div>
+      <div class="top3-title">今月最強の仕込み日</div>
+      <div class="top3-tags">
+        <span class="top3-tag tag-gold">一粒万倍日</span>
+        <span class="top3-tag tag-pink">先勝</span>
+        <span class="top3-tag tag-neutral">十二直「閉」</span>
+      </div>
+      <div class="top3-body">設定・準備・契約手続きは午前中に。公開は翌12日へ。</div>
+    </div>
+
+    <div class="top3-card gold" data-rank="3">
+      <div class="top3-date">🌸🌸🌸 4月8日（水）</div>
+      <div class="top3-title">財運特化の大吉日</div>
+      <div class="top3-tags">
+        <span class="top3-tag tag-gold">一粒万倍日</span>
+        <span class="top3-tag tag-green">天恩日</span>
+        <span class="top3-tag tag-gold">月徳日</span>
+        <span class="top3-tag tag-green">十二直「成」</span>
+      </div>
+      <div class="top3-body">財布新調・投資準備・収益仕組みづくりに月内最適。</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION 3: ダブル確認日 -->
+<section class="section fade-in" aria-labelledby="sec3-title">
+  <h2 class="section-title" id="sec3-title"><span class="section-number" aria-hidden="true">3</span>ダブル確認日（伝統暦×西洋占星術）</h2>
+  <div class="double-grid">
+    <div>
+      <div class="double-section-title">⭐ ダブル吉日</div>
+      <div class="double-card good">
+        <div class="double-card-date">4月22日（水）</div>
+        <div class="double-card-sub">友引・寅の日・十二直「開」× 火星牡羊座期ピーク</div>
+        <div class="double-card-tags">
+          <span class="top3-tag tag-gold">金運</span><span class="top3-tag tag-pink">行動力</span><span class="top3-tag tag-green">開業運</span>
+        </div>
+        <div class="double-card-body">3方向から吉が一致。月内最強金運日。</div>
+      </div>
+      <div class="double-card good">
+        <div class="double-card-date">4月10日（金）</div>
+        <div class="double-card-sub">寅の日・十二直「開」× 火星牡羊座入り（04:37 JST）</div>
+        <div class="double-card-tags">
+          <span class="top3-tag tag-gold">金運の扉</span><span class="top3-tag tag-pink">行動力加速</span>
+        </div>
+        <div class="double-card-body">金運の扉が開くと同時に行動力が本格加速する起点日。</div>
+      </div>
+      <div class="double-card good">
+        <div class="double-card-date">4月24日（金）</div>
+        <div class="double-card-sub">鬼宿日・十二直「建」× 金星双子座入り</div>
+        <div class="double-card-tags">
+          <span class="top3-tag tag-gold">暦最吉</span><span class="top3-tag tag-pink">発信追い風</span>
+        </div>
+        <div class="double-card-body">暦最吉×発信・SNS拡散の追い風が完全一致。</div>
+      </div>
+    </div>
+    <div>
+      <div class="double-section-title">✕ ダブル注意日</div>
+      <div class="double-card bad">
+        <div class="double-card-date">4月13日（月）</div>
+        <div class="double-card-sub">不成就日・十二直「除」× 火星×海王星（タイト近接）</div>
+        <div class="double-card-tags">
+          <span class="top3-tag tag-error">判断保留</span><span class="top3-tag tag-error">焦り注意</span>
+        </div>
+        <div class="double-card-body">伝統暦と西洋占星術の両方が「判断保留」を示す稀な日。大型投資・新規契約・急な発信は翌週以降に持ち越し。</div>
+      </div>
+      <div class="double-card bad">
+        <div class="double-card-date">4月19日（日）</div>
+        <div class="double-card-sub">受死日・重日・十二直「危」× 火星×土星（接近中）</div>
+        <div class="double-card-tags">
+          <span class="top3-tag tag-error">伝統暦3重凶</span><span class="top3-tag tag-error">西洋制動</span>
+        </div>
+        <div class="double-card-body">全行動停止日。バックアップのみ推奨。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: 日別カレンダー -->
+<section class="section fade-in" aria-labelledby="sec4-title">
+  <h2 class="section-title" id="sec4-title"><span class="section-number" aria-hidden="true">4</span>日別完全網羅カレンダー</h2>
+
+  <div class="calendar-nav" role="group" aria-label="絞り込みフィルター">
+    <button class="calendar-filter-btn active" data-filter="all">すべて表示</button>
+    <button class="calendar-filter-btn" data-filter="great">🌸🌸🌸 超大吉</button>
+    <button class="calendar-filter-btn" data-filter="good">🌸🌸 大吉</button>
+    <button class="calendar-filter-btn" data-filter="ok">🌸 吉</button>
+    <button class="calendar-filter-btn" data-filter="warn">⚠️ 注意</button>
+    <button class="calendar-filter-btn" data-filter="bad">🚫 凶</button>
+  </div>
+
+  <div class="day-list" id="day-list">
+
+    <!-- 4/1 -->
+    <article class="day-card rank-warn" data-rank="warn" aria-labelledby="day1-title">
+      <div class="day-header">
+        <div class="day-date-block"><div class="day-date-num">1</div><div class="day-date-meta">水曜日</div></div>
+        <div class="day-title-block">
+          <div class="day-rank-badge badge-warn">⚠️ 注意</div>
+          <div class="day-title" id="day1-title">仕込みと整理の日</div>
+          <div class="day-tags">
+            <span class="top3-tag tag-neutral">先負</span><span class="top3-tag tag-neutral">巳の日</span><span class="top3-tag tag-green">大明日</span><span class="top3-tag tag-error">十死日</span><span class="top3-tag tag-neutral">軫宿</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="action-table-wrap">
+          <table class="action-table">
+            <thead><tr><th>行動</th><th>判断</th><th>理由</th></tr></thead>
+            <tbody>
+              <tr><td>開始・契約・登録</td><td class="action-mark mark-bad">✕</td><td>十死日のため新規は厳禁</td></tr>
+              <tr><td>記事・Note公開</td><td class="action-mark mark-bad">✕</td><td>新規公開は避ける</td></tr>
+              <tr><td>お金を動かす</td><td class="action-mark mark-cond">△</td><td>巳の日・午後の軽い行動のみ</td></tr>
+              <tr><td>撮影・外出</td><td class="action-mark mark-good">○</td><td>軫宿：遠征計画の立案に向く</td></tr>
+              <tr><td>整理・点検</td><td class="action-mark mark-best">◎</td><td>メモ・構成整理向き</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="best-time"><span class="best-time-icon">⏰</span><div class="best-time-text"><strong>ベスト時間</strong>午後から（先負）</div></div>
+        <div class="why-box"><div class="why-box-title">💡 なぜこの評価？</div><div class="why-box-body">先負の午後から動けますが、十死日（凶日）があるため新規行動は控えめに。軫宿は遠征・移動に吉とされるため花撮影の遠征計画をメモするのに向いています。</div></div>
+        <details class="evidence"><summary>📚 根拠詳細</summary>
+          <div class="evidence-body"><ul class="evidence-list">
+            <li class="evidence-item"><span class="evidence-label">六曜</span><span class="evidence-value">先負（午前凶・午後吉）</span></li>
+            <li class="evidence-item"><span class="evidence-label">選日</span><span class="evidence-value">巳の日・大明日・十死日（参考・凶）</span></li>
+            <li class="evidence-item"><span class="evidence-label">十二直</span><span class="evidence-value">満（万物が満ちる日。何事も控えめがよい）</span></li>
+            <li class="evidence-item"><span class="evidence-label">二十八宿</span><span class="evidence-value">軫宿（旅行・移動・遠征に吉）</span></li>
+            <li class="evidence-item"><span class="evidence-label">九星（参考）</span><span class="evidence-value">三碧木星</span></li>
+            <li class="evidence-item"><span class="evidence-label">凶日</span><span class="evidence-value">十死日（新規行動に注意）</span></li>
+          </ul></div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 4/2 -->
+    <article class="day-card rank-3" data-rank="great" aria-labelledby="day2-title">
+      <div class="day-header">
+        <div class="day-date-block"><div class="day-date-num">2</div><div class="day-date-meta">木曜日</div></div>
+        <div class="day-title-block">
+          <div class="day-rank-badge badge-3">🌸🌸🌸 超大吉</div>
+          <div class="day-title" id="day2-title">浄化・リセットの満月大吉日</div>
+          <div class="day-special-badges">
+            <span class="moon-badge">🌕 満月 11:12 JST｜乙女座12°21' ピンクムーン</span>
+          </div>
+          <div class="day-tags" style="margin-top: var(--space-2);">
+            <span class="top3-tag tag-warning">仏滅</span><span class="top3-tag tag-green">大明日</span><span class="top3-tag tag-neutral">十二直「平」</span><span class="top3-tag tag-neutral">角宿</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="action-table-wrap">
+          <table class="action-table">
+            <thead><tr><th>行動</th><th>判断</th><th>理由</th></tr></thead>
+            <tbody>
+              <tr><td>開始・契約・登録</td><td class="action-mark mark-cond">△</td><td>仏滅のため慶事系は避ける</td></tr>
+              <tr><td>記事・Note公開</td><td class="action-mark mark-best">◎</td><td>振り返り・感謝・浄化系記事に最適</td></tr>
+              <tr><td>お金を動かす</td><td class="action-mark mark-cond">△</td><td>仏滅のため大きな出費は翌日以降</td></tr>
+              <tr><td>撮影・外出</td><td class="action-mark mark-good">○</td><td>満月撮影・浄化ロケに最適</td></tr>
+              <tr><td>整理・点検</td><td class="action-mark mark-best">◎</td><td>月内最高の浄化タイミング</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="best-time"><span class="best-time-icon">⏰</span><div class="best-time-text"><strong>ベスト時間</strong>終日（整理・浄化）</div></div>
+        <div class="why-box"><div class="why-box-title">💡 なぜこの評価？</div><div class="why-box-body">乙女座の満月は「細部・整理・浄化・完結」がテーマ。不要なものをすべて手放す月内最高のタイミング。仏滅のため新規・慶事は避けつつ「手放す・リセット・感謝する」行動に全力を。パスワード一斉更新・古いデータ削除・セキュリティフルスキャンにも最適。</div></div>
+        <details class="evidence"><summary>📚 根拠詳細</summary>
+          <div class="evidence-body"><ul class="evidence-list">
+            <li class="evidence-item"><span class="evidence-label">六曜</span><span class="evidence-value">仏滅（慶事・新規は避ける）</span></li>
+            <li class="evidence-item"><span class="evidence-label">選日</span><span class="evidence-value">大明日（物事を明らかにする吉日）</span></li>
+            <li class="evidence-item"><span class="evidence-label">十二直</span><span class="evidence-value">平（たいら・大吉。万事公平・安定した作業に吉）</span></li>
+            <li class="evidence-item"><span class="evidence-label">二十八宿</span><span class="evidence-value">角宿（建築・移転には凶。日常作業は問題なし）</span></li>
+            <li class="evidence-item"><span class="evidence-label">九星（参考）</span><span class="evidence-value">四緑木星</span></li>
+            <li class="evidence-item"><span class="evidence-label">西洋（参考）</span><span class="evidence-value">乙女座満月・細部整理・浄化・完結点</span></li>
+          </ul></div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 4/3 -->
+    <article class="day-card rank-2" data-rank="good" aria-labelledby="day3-title">
+      <div class="day-header">
+        <div class="day-date-block"><div class="day-date-num">3</div><div class="day-date-meta">金曜日</div></div>
+        <div class="day-title-block">
+          <div class="day-rank-badge badge-2">🌸🌸 大吉</div>
+          <div class="day-title" id="day3-title">安定した大吉日</div>
+          <div class="day-tags">
+            <span class="top3-tag tag-green">大安</span><span class="top3-tag tag-green">大明日</span><span class="top3-tag tag-neutral">十二直「定」</span><span class="top3-tag tag-neutral">亢宿</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="action-table-wrap">
+          <table class="action-table">
+            <thead><tr><th>行動</th><th>判断</th><th>理由</th></tr></thead>
+            <tbody>
+              <tr><td>開始・契約・登録</td><td class="action-mark mark-best">◎</td><td>大安×定。方針・企画の確定に最適</td></tr>
+              <tr><td>記事・Note公開</td><td class="action-mark mark-best">◎</td><td>安定したリリース日</td></tr>
+              <tr><td>お金を動かす</td><td class="action-mark mark-best">◎</td><td>全般に吉</td></tr>
+              <tr><td>撮影・外出</td><td class="action-mark mark-good">○</td><td>穏やかな撮影日和</td></tr>
+              <tr><td>整理・点検</td><td class="action-mark mark-good">○</td><td>いつでも可</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="best-time"><span class="best-time-icon">⏰</span><div class="best-time-text"><strong>ベスト時間</strong>終日</div></div>
+        <div class="why-box"><div class="why-box-title">💡 なぜこの評価？</div><div class="why-box-body">大安×十二直「定」の組み合わせ。「定」は物事を定める日で、企画の確定・投稿スケジュールの固定・ブログの新方針決めに最適。派手さはないが安定した力のある日です。</div></div>
+        <details class="evidence"><summary>📚 根拠詳細</summary>
+          <div class="evidence-body"><ul class="evidence-list">
+            <li class="evidence-item"><span class="evidence-label">六曜</span><span class="evidence-value">大安（万事良し・最吉の六曜）</span></li>
+            <li class="evidence-item"><span class="evidence-label">選日</span><span class="evidence-value">大明日（物事を明らかにする吉日）</span></li>
+            <li class="evidence-item"><span class="evidence-label">十二直</span><span class="evidence-value">定（さだん・小吉。物事が定まる日。移転・売買・婚礼に吉）</span></li>
+            <li class="evidence-item"><span class="evidence-label">二十八宿</span><span class="evidence-value">亢宿（衣類仕立て・物品購入・種まき吉。造作凶）</span></li>
+            <li class="evidence-item"><span class="evidence-label">九星（参考）</span><span class="evidence-value">五黄土星</span></li>
+          </ul></div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 4/4 -->
+    <article class="day-card rank-1" data-rank="ok" aria-labelledby="day4-title">
+      <div class="day-header">
+        <div class="day-date-block"><div class="day-date-num">4</div><div class="day-date-meta">土曜日</div></div>
+        <div class="day-title-block">
+          <div class="day-rank-badge badge-1">🌸 吉</div>
+          <div class="day-title" id="day4-title">正午前後のみ吉</div>
+          <div class="day-tags">
+            <span class="top3-tag tag-warning">赤口</span><span class="top3-tag tag-neutral">十二直「執」</span><span class="top3-tag tag-neutral">氐宿</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="action-table-wrap">
+          <table class="action-table">
+            <thead><tr><th>行動</th><th>判断</th><th>理由</th></tr></thead>
+            <tbody>
+              <tr><td>開始・契約・登録</td><td class="action-mark mark-cond">△</td><td>正午前後のみ。赤口注意</td></tr>
+              <tr><td>記事・Note公開</td><td class="action-mark mark-cond">△</td><td>正午前後のみ可</td></tr>
+              <tr><td>お金を動かす</td><td class="action-mark mark-cond">△</td><td>十二直「執」：正午に契約・購入</td></tr>
+              <tr><td>撮影・外出</td><td class="action-mark mark-good">○</td><td>神社参拝・近場ロケ遠征可</td></tr>
+              <tr><td>整理・点検</td><td class="action-mark mark-good">○</td><td>いつでも可</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="best-time"><span class="best-time-icon">⏰</span><div class="best-time-text"><strong>ベスト時間</strong>11〜13時のみ（赤口）</div></div>
+        <div class="why-box"><div class="why-box-title">💡 なぜこの評価？</div><div class="why-box-body">赤口は正午前後のみが吉。早朝と夜は避けてください。神社参拝・近場ロケ遠征の正午前後に活用できます。</div></div>
+        <details class="evidence"><summary>📚 根拠詳細</summary>
+          <div class="evidence-body"><ul class="evidence-list">
+            <li class="evidence-item"><span class="evidence-label">六曜</span><span class="evidence-value">赤口（正午のみ吉・他は凶。火の元・刃物注意）</span></li>
+            <li class="evidence-item"><span class="evidence-label">十二直</span><span class="evidence-value">執（とる・小吉。婚礼・種まき・造作は吉。旅行・財産整理は凶）</span></li>
+            <li class="evidence-item"><span class="evidence-label">二十八宿</span><span class="evidence-value">氐宿（結婚・会合・取引に吉）</span></li>
+            <li class="evidence-item"><span class="evidence-label">九星（参考）</span><span class="evidence-value">六白金星</span></li>
+          </ul></div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 4/5 -->
+    <article class="day-card rank-warn" data-rank="warn" aria-labelledby="day5-title">
+      <div class="day-header">
+        <div class="day-date-block"><div class="day-date-num">5</div><div class="day-date-meta">日曜日</div></div>
+        <div class="day-title-block">
+          <div class="day-rank-badge badge-warn">⚠️ 注意</div>
+          <div class="day-title" id="day5-title">仕込みのみの日</div>
+          <div class="day-special-badges">
+            <span class="season-badge">🌿 清明（春の節気）</span>
+          </div>
+          <div class="day-tags" style="margin-top: var(--space-2);">
+            <span class="top3-tag tag-pink">先勝</span><span class="top3-tag tag-error">不成就日</span><span class="top3-tag tag-green">大明日</span><span class="top3-tag tag-green">天恩日</span><span class="top3-tag tag-neutral">十二直「執」</span><span class="top3-tag tag-neutral">房宿</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="action-table-wrap">
+          <table class="action-table">
+            <thead><tr><th>行動</th><th>判断</th><th>理由</th></tr></thead>
+            <tbody>
+              <tr><td>開始・契約・登録</td><td class="action-mark mark-bad">✕</td><td>不成就日：新規・契約は厳禁</td></tr>
+              <tr><td>記事・Note公開</td><td class="action-mark mark-bad">✕</td><td>不成就日：初公開は避ける</td></tr>
+              <tr><td>お金を動かす</td><td class="action-mark mark-bad">✕</td><td>不成就日：重要な出費は避ける</td></tr>
+              <tr><td>撮影・外出</td><td class="action-mark mark-good">○</td><td>清明：花撮影・近場ロケ向き</td></tr>
+              <tr><td>整理・点検</td><td class="action-mark mark-best">◎</td><td>構成メモ・下書き作業に最適</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="best-time"><span class="best-time-icon">⏰</span><div class="best-time-text"><strong>ベスト時間</strong>午前中（先勝）</div></div>
+        <div class="why-box"><div class="why-box-title">💡 なぜこの評価？</div><div class="why-box-body">清明（春の生気が満ちる節気）という特別な日ですが、不成就日のため新規行動はすべて厳禁。下書き・アイデア出し・構成メモに留め、行動は翌日以降に持ち越してください。</div></div>
+        <details class="evidence"><summary>📚 根拠詳細</summary>
+          <div class="evidence-body"><ul class="evidence-list">
+            <li class="evidence-item"><span class="evidence-label">六曜</span><span class="evidence-value">先勝（午前吉・午後凶）</span></li>
+            <li class="evidence-item"><span class="evidence-label">選日</span><span class="evidence-value">不成就日（何事も成就しない凶日）・大明日・天恩日</span></li>
+            <li class="evidence-item"><span class="evidence-label">節気</span><span class="evidence-value">清明（春の生気が天地に満ちる節気）</span></li>
+            <li class="evidence-item"><span class="evidence-label">十二直</span><span class="evidence-value">執（とる・小吉。仕込み・設定は可）</span></li>
+            <li class="evidence-item"><span class="evidence-label">二十八宿</span><span class="evidence-value">房宿（婚礼・旅行・新規事業に吉だが不成就日で相殺）</span></li>
+            <li class="evidence-item"><span class="evidence-label">九星（参考）</span><span class="evidence-value">七赤金星</span></li>
+            <li class="evidence-item"><span class="evidence-label">備考</span><span class="evidence-value">主要複数ソースで一粒万倍日の記載なし。当カレンダーでは不採用。</span></li>
+          </ul></div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 4/6 -->
+    <article class="day-card rank-2" data-rank="good" aria-labelledby="day6-title">
+      <div class="day-header">
+        <div class="day-date-block"><div class="day-date-num">6</div><div class="day-date-meta">月曜日</div></div>
+        <div class="day-title-block">
+          <div class="day-rank-badge badge-2">🌸🌸 大吉</div>
+          <div class="day-title" id="day6-title">人間関係・交流の吉日</div>
+          <div class="day-tags">
+            <span class="top3-tag tag-pink">友引</span><span class="top3-tag tag-green">大明日</span><span class="top3-tag tag-green">天恩日</span><span class="top3-tag tag-neutral">十二直「破」</span><span class="top3-tag tag-neutral">心宿</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="action-table-wrap">
+          <table class="action-table">
+            <thead><tr><th>行動</th><th>判断</th><th>理由</th></tr></thead>
+            <tbody>
+              <tr><td>開始・契約・登録</td><td class="action-mark mark-cond">△</td><td>十二直「破」：新規・契約は控える</td></tr>
+              <tr><td>記事・Note公開</td><td class="action-mark mark-good">○</td><td>感謝・交流系コンテンツは吉</td></tr>
+              <tr><td>お金を動かす</td><td class="action-mark mark-cond">△</td><td>大きな出費は翌週以降</td></tr>
+              <tr><td>撮影・外出</td><td class="action-mark mark-good">○</td><td>友引：人と会う撮影に向く</td></tr>
+              <tr><td>整理・点検</td><td class="action-mark mark-best">◎</td><td>十二直「破」：整理・見直しに最吉</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="best-time"><span class="best-time-icon">⏰</span><div class="best-time-text"><strong>ベスト時間</strong>朝早め or 夕方（友引：11〜13時は凶）</div></div>
+        <div class="why-box"><div class="why-box-title">💡 なぜこの評価？</div><div class="why-box-body">友引は人との縁が動きやすく、コラボ相談・読者との交流・感謝投稿に最適。ただし十二直「破」のため「新しいことを始める・契約する」より「古いものを整理・見直す」に使うのが正解。</div></div>
+        <details class="evidence"><summary>📚 根拠詳細</summary>
+          <div class="evidence-body"><ul class="evidence-list">
+            <li class="evidence-item"><span class="evidence-label">六曜</span><span class="evidence-value">友引（友を引く吉日。11〜13時は凶）</span></li>
+            <li class="evidence-item"><span class="evidence-label">選日</span><span class="evidence-value">大明日・天恩日（天の恩恵が届く吉日）</span></li>
+            <li class="evidence-item"><span class="evidence-label">十二直</span><span class="evidence-value">破（やぶる・凶。古いものの整理に吉）</span></li>
+            <li class="evidence-item"><span class="evidence-label">二十八宿</span><span class="evidence-value">心宿（縁談・交流・人間関係に吉）</span></li>
+            <li class="evidence-item"><span class="evidence-label">九星（参考）</span><span class="evidence-value">八白土星</span></li>
+          </ul></div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 4/7 -->
+    <article class="day-card rank-bad" data-rank="bad" aria-labelledby="day7-title">
+      <div class="day-header">
+        <div class="day-date-block"><div class="day-date-num">7</div><div class="day-date-meta">火曜日</div></div>
+        <div class="day-title-block">
+          <div class="day-rank-badge badge-bad">🚫 凶</div>
+          <div class="day-title" id="day7-title">完全静止日</div>
+          <div class="day-tags">
+            <span class="top3-tag tag-neutral">先負</span><span class="top3-tag tag-error">受死日</span><span class="top3-tag tag-error">十二直「危」</span><span class="top3-tag tag-neutral">尾宿</span><span class="top3-tag tag-green">大明日</span><span class="top3-tag tag-green">天恩日</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="action-table-wrap">
+          <table class="action-table">
+            <thead><tr><th>行動</th><th>判断</th><th>理由</th></tr></thead>
+            <tbody>
+              <tr><td>開始・契約・登録</td><td class="action-mark mark-bad">✕</td><td>受死日＋十二直「危」：月内最凶</td></tr>
+              <tr><td>記事・Note公開</td><td class="action-mark mark-bad">✕</td><td>この日の初公開は絶対避ける</td></tr>
+              <tr><td>お金を動かす</td><td class="action-mark mark-bad">✕</td><td>購入・課金・契約は翌日以降へ</td></tr>
+              <tr><td>撮影・外出</td><td class="action-mark mark-cond">△</td><td>軽い近場のみ</td></tr>
+              <tr><td>整理・点検</td><td class="action-mark mark-best">◎</td><td>バックアップ・内省のみ推奨</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="best-time"><span class="best-time-icon">⏰</span><div class="best-time-text"><strong>ベスト時間</strong>なし（全時間帯・新規行動は避ける）</div></div>
+        <div class="why-box"><div class="why-box-title">💡 なぜこの評価？</div><div class="why-box-body">受死日は月内最凶の凶日。十二直「危」も重なり新規行動はすべて避けるべき日。大明日・天恩日という吉日も重なりますが、受死日の凶意が上回ります。「何もしない」がこの日の正解。</div></div>
+        <details class="evidence"><summary>📚 根拠詳細</summary>
+          <div class="evidence-body"><ul class="evidence-list">
+            <li class="evidence-item"><span class="evidence-label">六曜</span><span class="evidence-value">先負（午前凶・午後吉）</span></li>
+            <li class="evidence-item"><span class="evidence-label">選日</span><span class="evidence-value">受死日（参考・月内最凶）・大明日・天恩日</span></li>
+            <li class="evidence-item"><span class="evidence-label">十二直</span><span class="evidence-value">危（あやぶ・大凶。新規行動は一切控える）</span></li>
+            <li class="evidence-item"><span class="evidence-label">二十八宿</span><span class="evidence-value">尾宿（万事に凶とされる宿）</span></li>
+            <li class="evidence-item"><span class="evidence-label">九星（参考）</span><span class="evidence-value">九紫火星</span></li>
+          </ul></div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 4/8 -->
+    <article class="day-card rank-3" data-rank="great" aria-labelledby="day8-title">
+      <div class="day-header">
+        <div class="day-date-block"><div class="day-date-num">8</div><div class="day-date-meta">水曜日</div></div>
+        <div class="day-title-block">
+          <div class="day-rank-badge badge-3">🌸🌸🌸 超大吉</div>
+          <div class="day-title" id="day8-title">財運特化の大吉日</div>
+          <div class="day-tags">
+            <span class="top3-tag tag-warning">仏滅</span><span class="top3-tag tag-gold">一粒万倍日</span><span class="top3-tag tag-green">天恩日</span><span class="top3-tag tag-gold">月徳日</span><span class="top3-tag tag-green">十二直「成」</span><span class="top3-tag tag-gold">箕宿</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="action-table-wrap">
+          <table class="action-table">
+            <thead><tr><th>行動</th><th>判断</th><th>理由</th></tr></thead>
+            <tbody>
+              <tr><td>開始・契約・登録</td><td class="action-mark mark-good">○</td><td>仏滅のため慶事系は控えめに</td></tr>
+              <tr><td>記事・Note公開</td><td class="action-mark mark-good">○</td><td>仕込み・設定系記事は吉</td></tr>
+              <tr><td>お金を動かす</td><td class="action-mark mark-best">◎</td><td>月内最高の財運日。全力で動く</td></tr>
+              <tr><td>撮影・外出</td><td class="action-mark mark-good">○</td><td>問題なし</td></tr>
+              <tr><td>整理・点検</td><td class="action-mark mark-good">○</td><td>行動前にデスク・財布を整理</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="best-time"><span class="best-time-icon">⏰</span><div class="best-time-text"><strong>ベスト時間</strong>終日（財運行動に集中）</div></div>
+        <div class="why-box"><div class="why-box-title">💡 なぜこの評価？</div><div class="why-box-body">一粒万倍日×天恩日×月徳日×十二直「成」という4重吉。「成（なる）」は何事も成就する日で、一粒万倍日との相乗効果で月内最強の財運日。仏滅の凶意を大きく上回る強さです。</div></div>
+        <details class="evidence"><summary>📚 根拠詳細</summary>
+          <div class="evidence-body"><ul class="evidence-list">
+            <li class="evidence-item"><span class="evidence-label">六曜</span><span class="evidence-value">仏滅（慶事・新規は避ける）</span></li>
+            <li class="evidence-item"><span class="evidence-label">選日</span><span class="evidence-value">一粒万倍日・天恩日・月徳日</span></li>
+            <li class="evidence-item"><span class="evidence-label">十二直</span><span class="evidence-value">成（なる・大吉。何事も成就する日）</span></li>
+            <li class="evidence-item"><span class="evidence-label">二十八宿</span><span class="evidence-value">箕宿（財運・豊穣・実りに吉）</span></li>
+            <li class="evidence-item"><span class="evidence-label">九星（参考）</span><span class="evidence-value">一白水星</span></li>
+          </ul></div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 4/9 -->
+    <article class="day-card rank-warn" data-rank="warn" aria-labelledby="day9-title">
+      <div class="day-header">
+        <div class="day-date-block"><div class="day-date-num">9</div><div class="day-date-meta">木曜日</div></div>
+        <div class="day-title-block">
+          <div class="day-rank-badge badge-warn">⚠️ 注意</div>
+          <div class="day-title" id="day9-title">準備に使う日</div>
+          <div class="day-tags">
+            <span class="top3-tag tag-green">大安</span><span class="top3-tag tag-green">天恩日</span><span class="top3-tag tag-error">十死日</span><span class="top3-tag tag-neutral">十二直「納」</span><span class="top3-tag tag-neutral">斗宿</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="action-table-wrap">
+          <table class="action-table">
+            <thead><tr><th>行動</th><th>判断</th><th>理由</th></tr></thead>
+            <tbody>
+              <tr><td>開始・契約・登録</td><td class="action-mark mark-cond">△</td><td>十死日注意。大安でも新規は控える</td></tr>
+              <tr><td>記事・Note公開</td><td class="action-mark mark-cond">△</td><td>ルーチン更新程度に留める</td></tr>
+              <tr><td>お金を動かす</td><td class="action-mark mark-cond">△</td><td>小さな行動のみ</td></tr>
+              <tr><td>撮影・外出</td><td class="action-mark mark-best">◎</td><td>十二直「納」：素材収集に最適</td></tr>
+              <tr><td>整理・点検</td><td class="action-mark mark-best">◎</td><td>仕入れ・ストック収集に最吉</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="best-time"><span class="best-time-icon">⏰</span><div class="best-time-text"><strong>ベスト時間</strong>終日（大安）</div></div>
+        <div class="why-box"><div class="why-box-title">💡 なぜこの評価？</div><div class="why-box-body">大安×天恩日という組み合わせは穏やかに良い日ですが、十死日（凶日）があるため重要な新規行動は避けて。十二直「納」は仕入れ・収納・ストック作成に最も向く日。翌10・11日の行動に向けて万全の準備をする日。</div></div>
+        <details class="evidence"><summary>📚 根拠詳細</summary>
+          <div class="evidence-body"><ul class="evidence-list">
+            <li class="evidence-item"><span class="evidence-label">六曜</span><span class="evidence-value">大安（万事良し）</span></li>
+            <li class="evidence-item"><span class="evidence-label">選日</span><span class="evidence-value">天恩日・十死日（参考・凶）</span></li>
+            <li class="evidence-item"><span class="evidence-label">十二直</span><span class="evidence-value">納（おさん・小吉。仕入れ・購入・ストックに吉）</span></li>
+            <li class="evidence-item"><span class="evidence-label">二十八宿</span><span class="evidence-value">斗宿（蓄財・貯蓄・ストックに吉）</span></li>
+            <li class="evidence-item"><span class="evidence-label">九星（参考）</span><span class="evidence-value">二黒土星</span></li>
+            <li class="evidence-item"><span class="evidence-label">西洋（参考）</span><span class="evidence-value">翌日04:37に火星牡羊座入り。前日の今日から気持ちの準備を。</span></li>
+          </ul></div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 4/10 -->
+    <article class="day-card rank-2" data-rank="good" aria-labelledby="day10-title">
+      <div class="day-header">
+        <div class="day-date-block"><div class="day-date-num">10</div><div class="day-date-meta">金曜日</div></div>
+        <div class="day-title-block">
+          <div class="day-rank-badge badge-2">🌸🌸 大吉</div>
+          <div class="day-title" id="day10-title">金運×開運の吉日</div>
+          <div class="day-special-badges">
+            <span class="moon-badge">🌙 下弦 13:51 JST</span>
+          </div>
+          <div class="day-tags" style="margin-top: var(--space-2);">
+            <span class="top3-tag tag-warning">赤口</span><span class="top3-tag tag-gold">寅の日</span><span class="top3-tag tag-gold">十二直「開」</span><span class="top3-tag tag-neutral">牛宿</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="action-table-wrap">
+          <table class="action-table">
+            <thead><tr><th>行動</th><th>判断</th><th>理由</th></tr></thead>
+            <tbody>
+              <tr><td>開始・契約・登録</td><td class="action-mark mark-best">◎</td><td>寅の日×十二直「開」：金運系に最強</td></tr>
+              <tr><td>記事・Note公開</td><td class="action-mark mark-good">○</td><td>正午前後に収益系記事を公開</td></tr>
+              <tr><td>お金を動かす</td><td class="action-mark mark-best">◎</td><td>寅の日の金運アクション全般に吉</td></tr>
+              <tr><td>撮影・外出</td><td class="action-mark mark-cond">△</td><td>赤口のため正午前後のみ</td></tr>
+              <tr><td>整理・点検</td><td class="action-mark mark-best">◎</td><td>下弦：不要設定・広告の手放しに吉</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="best-time"><span class="best-time-icon">⏰</span><div class="best-time-text"><strong>ベスト時間</strong>11〜13時に集中（赤口）</div></div>
+        <div class="why-box"><div class="why-box-title">💡 なぜこの評価？</div><div class="why-box-body">寅の日（毘沙門天の縁日・金運最強の干支日）×十二直「開」（開業・開設・公開に最吉）の組み合わせ。下弦の月で「手放し・調整」のタイミングも重なります。広告の見直し・停止設定の整理を正午前後に集中。</div></div>
+        <details class="evidence"><summary>📚 根拠詳細</summary>
+          <div class="evidence-body"><ul class="evidence-list">
+            <li class="evidence-item"><span class="evidence-label">六曜</span><span class="evidence-value">赤口（正午のみ吉・他は凶）</span></li>
